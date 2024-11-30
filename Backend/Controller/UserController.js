@@ -25,28 +25,25 @@ exports.singup = [
     }
 ]
 
-exports.login=[
-    async(req,res)=>{
-        try{
+exports.login = [
+    async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            // Find the user in the database
+            const user = await UserModel.findOne({ email });
             
-        const {email,password} = req.body
+            if (!user || !(await bcrypt.compare(password, user.password))) {
+                return res. json({ success: false, message: 'Invalid email or password' });
+            }
 
-        const user = await UserModel.findOne({email})
+            // Generate a token
+            const token = createToken(user._id);
+            res.status(200).json({ token:token });
 
-        if(!user){
-            res.json({success:false,message:"User doesn't exits"})
-        }
-        
-        const isMatch = await bcrypt.compare(password,user.password)
-        if(isMatch){
-            const token = createToken(user._id)
-            res.json({token:token})
-        }
-        else {
-            res.json({ success: false, message: 'Invalid credentials' })
-        }
-        }catch(err){
-            res.json({success:true,message:err.message})
+        } catch (err) {
+            console.error(err)
+            res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' })
         }
     }
-]
+];
