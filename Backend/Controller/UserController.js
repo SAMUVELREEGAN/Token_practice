@@ -39,11 +39,11 @@ exports.login = [
 
             // Generate a token
             const token = createToken(user._id);
-            res.status(200).json({ token:token });
+            res.json({ token:token });
 
         } catch (err) {
             console.error(err)
-            res.status(500).json({ success: false, message: 'An error occurred. Please try again later.' })
+            res.json({ success: false, message: 'An error occurred. Please try again later.' })
         }
     }
 ];
